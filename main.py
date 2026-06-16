@@ -59,23 +59,23 @@ def main():
                 if len(content) == 0:
                     print("No tasks found. \nEnter tasks using 'add' command")
                     continue
-                for i in range(len(content)):
-                    print(f'{content[i]["id"]}: {content[i]["task"]}')
+                for task in content:
+                    print(f'{task["id"]}: {task["task"]}')
 
             elif args[0] == 'update':
                 if len(args) < 3:
                     print("Enter in this format update <your_id> <your content>")
                 try:
                     update_id = int(args[1])
-
-                    new_content = [task for task in content if task["id"] != update_id]
-
-                    if len(new_content) == len(content):
-                        raise ValueError
-
-                    content = new_content
-
                     update_data = args[2]
+
+                    for task in content:
+                        if task["id"] == update_id:
+                            task["task"] = update_data
+                            break
+                        else:
+                            raise ValueError
+
 
                     json_data: Task = {
                         "id": update_id,
