@@ -30,13 +30,15 @@ def main():
             content = json.load(f)
     except (json.JSONDecodeError, FileNotFoundError):
         content = []
-    
-    
+
     try:
         while True:
             command = input("task-cli>> ")
             args = input_args(command)
             if args[0] == 'add':
+                if len(args) < 2:
+                    print("Enter some value")
+                    continue
                 data = args[1]
                 item_id: int = 0
                 if not content:
@@ -53,11 +55,16 @@ def main():
 
                 with open("tasks.json", "w") as f:
                     json.dump(content, f)
-            # if args[0] == 'update':
+            elif args[0] == 'list':
+                if len(content) == 0:
+                    print("Enter some tasks using 'add' command")
+                for i in range(len(content)):
+                    print(f'{content[i]["id"]}: {content[i]["task"]}')
+
+            # elif args[0] == 'update':
             
             # if args[0] == 'delete':
 
-            # if args[0] == 'list':
             elif args[0] == 'exit':
                 break
             else:
