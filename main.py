@@ -61,8 +61,34 @@ def main():
                 for i in range(len(content)):
                     print(f'{content[i]["id"]}: {content[i]["task"]}')
 
-            # elif args[0] == 'update':
-            
+            elif args[0] == 'update':
+                if len(args) < 3:
+                    print("Enter in this format update <your_id> <your content>")
+                try:
+                    update_id = int(args[1])
+
+                    new_content = [task for task in content if task["id"] != update_id]
+
+                    if len(new_content) == len(content):
+                        raise ValueError
+
+                    content = new_content
+
+                    update_data = args[2]
+
+                    json_data: Task = {
+                        "id": update_id,
+                        "task": update_data
+                    }
+                    content.append(json_data)
+                
+                    with open("tasks.json", "w") as f:
+                        json.dump(content, f)
+
+                except ValueError:
+                    print("Please enter a valid id")
+
+
             # if args[0] == 'delete':
 
             elif args[0] == 'exit':
