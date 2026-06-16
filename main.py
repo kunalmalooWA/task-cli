@@ -57,7 +57,8 @@ def main():
                     json.dump(content, f)
             elif args[0] == 'list':
                 if len(content) == 0:
-                    print("Enter some tasks using 'add' command")
+                    print("No tasks found. \nEnter tasks using 'add' command")
+                    continue
                 for i in range(len(content)):
                     print(f'{content[i]["id"]}: {content[i]["task"]}')
 
@@ -89,12 +90,30 @@ def main():
                     print("Please enter a valid id")
 
 
-            # if args[0] == 'delete':
+            elif args[0] == 'delete':
+                if len(args) < 2:
+                    print("Enter some id")
+                    continue
+                try:
+                    delete_id = int(args[1])
+                    new_content = [task for task in content if task["id"] != delete_id]
+                    if len(new_content) == len(content):
+                        raise ValueError
+
+                    content = new_content
+                    with open("tasks.json", "w") as f:
+                        json.dump(content, f)
+                
+                except ValueError:
+                    print("Please enter a valid id")
+            
+            elif args[0] == '--help':
+                print("1. add\n2. update\n3. list\n4. delete \n5. done")
 
             elif args[0] == 'exit':
                 break
             else:
-                print("Invalid command type help for command list")
+                print("Invalid command type --help for command list")
 
     except KeyboardInterrupt:
         print("\nExiting...")
