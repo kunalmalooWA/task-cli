@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import json
-from typing import TypedDict
+from typing import TypedDict, no_type_check
 from enum import IntEnum
 
 class Status(IntEnum):
@@ -70,10 +70,25 @@ def main():
                 save_content(content)
 
             elif args[0] == 'list':
-                if len(content) == 0:
+                filtered_list = content
+                if len(args) > 1:
+                    if args[1] == "done":
+                        filtered_list = list(filter(lambda task: task["status"] == Status.DONE, content))
+
+                    elif args[1] == "in-progress":
+                        filtered_list= list(filter(lambda task: task["status"] == Status.IN_PROGRESS, content))
+                    elif args[1] == "todo":
+                        filtered_list= list(filter(lambda task: task["status"] == Status.TODO, content))
+
+                    else:
+                        print("No such filter choose between 'done' and 'in-progress'")
+                        continue
+
+                if len(filtered_list) == 0:
                     print("No tasks found. \nEnter tasks using 'add' command")
                     continue
-                for task in content:
+
+                for task in filtered_list:
                     status = "TODO" if task["status"] == 0 else "IN-PROGRESS" if task["status"] == 1 else "COMPLETED"
                     print(f'{status} {task["id"]} : {task["task"]}')
 
@@ -83,13 +98,15 @@ def main():
                 try:
                     update_id = int(args[1])
                     update_data = args[2]
-
+                    found = False
                     for task in content:
                         if task["id"] == update_id:
                             task["task"] = update_data
+                            found = True
                             break
-                        else:
-                            raise ValueError
+                        
+                    if not found:
+                        raise ValueError
                 
                     save_content(content)
                 except ValueError:
@@ -134,10 +151,20 @@ def main():
                     if task["id"] == in_progress_id:
                         task["status"] = Status.IN_PROGRESS
                 save_content(content)
-                
             
             elif args[0] == '--help':
-                print("1. add\n2. update\n3. list\n4. delete \n5. mark-done \n6. mark-in-progress \n7. exit")
+                print("""
+
+                      1. add\n
+                      2. update\n
+                      3. list\n
+                      4. delete \n
+                      5. mark-done \n
+                      6. mark-in-progress\n
+                      7. list done \n
+                      8. list in-progress \n
+                      7. exit
+                      """)
 
             elif args[0] == 'exit':
                 break
@@ -146,4 +173,3 @@ def main():
 
     except KeyboardInterrupt:
         print("\nExiting...")
-
